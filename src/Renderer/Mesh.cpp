@@ -38,26 +38,17 @@ void Mesh::Draw(Shader &shader) const {
 
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
-    unsigned int normalNr = 1;
-    unsigned int heightNr = 1;
-    unsigned int roughnessNr = 1;
     unsigned int aoNr = 1;
 
     for (unsigned int i = 0; i < textures.size(); i++) {
-        glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-        // retrieve texture number (the N in diffuse_textureN)
+        glActiveTexture(GL_TEXTURE0 + i);
         std::string number;
         std::string name = textures[i].type;
+
         if (name == "texture_diffuse")
             number = std::to_string(diffuseNr++);
         else if (name == "texture_specular")
             number = std::to_string(specularNr++);
-        else if (name == "texture_normal")
-            number = std::to_string(normalNr++);
-        else if (name == "texture_height")
-            number = std::to_string(heightNr++);
-        else if (name == "texture_roughness")
-            number = std::to_string(roughnessNr++);
         else if (name == "texture_ao")
             number = std::to_string(aoNr++);
 

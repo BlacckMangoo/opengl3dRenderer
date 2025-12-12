@@ -163,21 +163,12 @@ Mesh Model::ProcessMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<Texture> specularMaps = loadMaterialTextures(scene->mMaterials[mesh->mMaterialIndex], aiTextureType_SPECULAR, "texture_specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-    // 3. normal maps
-    std::vector<Texture> normalMaps = loadMaterialTextures(scene->mMaterials[mesh->mMaterialIndex], aiTextureType_NORMALS, "texture_normal");
-    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
-    // 4. roughness maps (stored as shininess in some formats)
-    std::vector<Texture> roughnessMaps = loadMaterialTextures(scene->mMaterials[mesh->mMaterialIndex], aiTextureType_SHININESS, "texture_roughness");
-    textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
-
-    // 5. ambient occlusion maps
-    std::vector<Texture> aoMaps = loadMaterialTextures(scene->mMaterials[mesh->mMaterialIndex], aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
-    textures.insert(textures.end(), aoMaps.begin(), aoMaps.end());
-
-    // 6. height maps
-    std::vector<Texture> heightMaps = loadMaterialTextures(scene->mMaterials[mesh->mMaterialIndex], aiTextureType_HEIGHT, "texture_height");
-    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+    // 3. ambient occlusion (manually load from directory)
+    Texture aoTexture;
+    aoTexture.id = TextureFromFile("ao.jpg", directory);
+    aoTexture.type = "texture_ao";
+    aoTexture.path = directory + "/ao.jpg";
+    textures.push_back(aoTexture);
 
 
 

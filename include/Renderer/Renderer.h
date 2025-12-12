@@ -36,7 +36,6 @@ public :
         // Set lighting uniforms
         shader.SetVec3("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
         shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        shader.SetFloat("shininess", 32.0f);
 
         // Draw all meshes in the model
         for (const auto& mesh : gameObject.model->meshes) {
