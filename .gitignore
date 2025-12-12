@@ -49,4 +49,5 @@ _deps/
 Thumbs.db
 desktop.ini
 
-Deps
+# Dependencies (managed by CMake FetchContent)
+Deps/
