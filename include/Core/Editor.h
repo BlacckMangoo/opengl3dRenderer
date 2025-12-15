@@ -1,0 +1,8 @@
+//
+// Created by lenovo on 15-12-2025.
+//
+
+#ifndef WATERADVENTURE_EDITOR_H
+#define WATERADVENTURE_EDITOR_H
+
+#endif //WATERADVENTURE_EDITOR_H
