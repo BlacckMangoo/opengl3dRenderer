@@ -7,6 +7,7 @@ layout (location = 3) in vec2 aTexCoords;
 out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoords;
+out vec3 Tangent;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -15,9 +16,12 @@ uniform mat3 normalMatrix;
 
 void main()
 {
-    FragPos = vec3(model * vec4(aPos, 1.0));
-    Normal = normalMatrix * aNormal;
+    vec4 worldPos = model * vec4(aPos, 1.0);
+    FragPos = vec3(worldPos);
+
+    Normal = normalize(normalMatrix * aNormal);
+    Tangent = normalize(normalMatrix * aTangent);
     TexCoords = aTexCoords;
 
-    gl_Position = projection * view * vec4(FragPos, 1.0);
+    gl_Position = projection * view * worldPos;
 }
