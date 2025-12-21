@@ -1,0 +1,8 @@
+//
+// Created by lenovo on 21-12-2025.
+//
+
+#ifndef WATERADVENTURE_CURVE_H
+#define WATERADVENTURE_CURVE_H
+
+#endif //WATERADVENTURE_CURVE_H
