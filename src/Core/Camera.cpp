@@ -2,13 +2,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera()
-    : position(0.0f, 0.0f, 10.0f)
+    : position(0.0f, 2.0f, 10.0f)
     , front(0.0f, 0.0f, -1.0f)
     , up(0.0f, 1.0f, 0.0f)
     , worldUp(0.0f, 1.0f, 0.0f)
-    , yaw(-90.0f)
-    , pitch(0.0f)
-    , roll(0.0f)
     , fov(45.0f)
     , nearPlane(0.1f)
     , farPlane(1000.0f)
@@ -17,9 +14,16 @@ Camera::Camera()
     , mouseSensitivity(0.1f)
     , panSensitivity(0.003f)
     , scrollSensitivity(2.0f)
+    , yaw(-90.0f)
+    , pitch(0.0f)
+    , roll(0.0f)
 {
     UpdateCameraVectors();
-}
+    lastX = 1920.0f / 2.0f;
+    lastY = 1080.0f / 2.0f;
+    firstMouse = true;
+} // intitialise fields in the constructor
+
 
 void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
     const float velocity = movementSpeed * deltaTime;
@@ -40,45 +44,43 @@ void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
 }
 
 void Camera::SetupMouseCallbacks(GLFWwindow* window, Camera* camera) {
-    // Store camera pointer in window user pointer for callback access
     glfwSetWindowUserPointer(window, camera);
-
-    // Cursor position callback for camera rotation and panning
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
-        auto* camera = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+        auto* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 
-        if (camera->firstMouse) {
-            camera->lastX = static_cast<float>(xpos);
-            camera->lastY = static_cast<float>(ypos);
-            camera->firstMouse = false;
+        if (cam->firstMouse) {
+            cam->lastX = static_cast<float>(xpos);
+            cam->lastY = static_cast<float>(ypos);
+            cam->firstMouse = false;
         }
 
-        float xoffset = static_cast<float>(xpos) - camera->lastX;
-        float yoffset = camera->lastY - static_cast<float>(ypos); // reversed since y-coordinates go from bottom to top
+        const float xoffset = static_cast<float>(xpos) - cam->lastX;
+        const float yoffset = cam->lastY - static_cast<float>(ypos); // reversed since y-coordinates go from bottom to top
 
-        camera->lastX = static_cast<float>(xpos);
-        camera->lastY = static_cast<float>(ypos);
+        cam->lastX = static_cast<float>(xpos);
+        cam->lastY = static_cast<float>(ypos);
 
-        if (camera->isRotating) {
-            camera->ProcessMouseMovement(xoffset, yoffset);
-        } else if (camera->isPanning) {
-            camera->ProcessMousePan(xoffset, yoffset);
+        if (cam->isRotating) {
+            cam->ProcessMouseMovement(xoffset, yoffset);
+        } else if (cam->isPanning) {
+            cam->ProcessMousePan(xoffset, yoffset);
         }
     });
 
-    // Scroll callback for zoom
-    glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
-        auto* camera = static_cast<Camera*>(glfwGetWindowUserPointer(window));
-        camera->ProcessMouseScroll(static_cast<float>(yoffset));
+    glfwSetScrollCallback(window, [](GLFWwindow* window, double xOffset, double yOffset) {
+        auto* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+        cam->ProcessMouseScroll(static_cast<float>(yOffset));
     });
+
+
 }
 
-void Camera::ProcessMouseMovement(float xoffset, float yoffset) {
-    xoffset *= mouseSensitivity;
-    yoffset *= mouseSensitivity;
+void Camera::ProcessMouseMovement(float xOffset, float yOffset) {
+    xOffset *= mouseSensitivity;
+    yOffset *= mouseSensitivity;
 
-    yaw += xoffset;
-    pitch += yoffset;
+    yaw += xOffset;
+    pitch += yOffset;
 
     // Constrain pitch
     if (pitch > 89.0f)
@@ -89,15 +91,15 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset) {
     UpdateCameraVectors();
 }
 
-void Camera::ProcessMousePan(float xoffset, float yoffset) {
-    xoffset *= panSensitivity;
-    yoffset *= panSensitivity;
+void Camera::ProcessMousePan(float xOffset, float yOffset) {
+    xOffset *= panSensitivity;
+    yOffset *= panSensitivity;
 
-    position -= right * xoffset;
-    position += up * yoffset;
+    position -= right * xOffset;
+    position += up * yOffset;
 }
 
-void Camera::ProcessMouseScroll(float yoffset) {
+void Camera::ProcessMouseScroll(const float yoffset) {
     fov -= yoffset * scrollSensitivity;
     if (fov < 1.0f)
         fov = 1.0f;
@@ -105,7 +107,7 @@ void Camera::ProcessMouseScroll(float yoffset) {
         fov = 45.0f;
 }
 
-glm::mat4 Camera::GetProjectionMatrix(float aspectRatio) const {
+glm::mat4 Camera::GetProjectionMatrix(const float aspectRatio) const {
     return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 }
 

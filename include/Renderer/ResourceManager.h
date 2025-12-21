@@ -3,7 +3,7 @@
 #include "../Shader.h"
 #include <map>
 #include <string>
-
+#include <filesystem>
 
 
 class ResourceManager
@@ -12,21 +12,22 @@ public:
    
     static std::map<std::string, Shader>    Shaders;
     static std::map<std::string, Texture2D> Textures;
-    static Shader    LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, const std::string &name);
-    static Shader&   GetShader(const std::string &name);
-    static Texture2D LoadTexture(const char* file, bool alpha, const std::string &name);
-    static Shader LoadComputeShader(const char* cShaderFile, const std::string &name);
-
-    static Texture2D GetTexture(const std::string &name);
-    static void      Clear();
+    static Shader       LoadShader(const std::filesystem::path &vShaderFile, const std::filesystem::path fShaderFile, const std::string &name);
+    static Shader&      GetShader(const std::string &name);
+    static Texture2D    LoadTexture(const std::filesystem::path &file, bool alpha, const std::string &name);
+    static Shader       LoadComputeShader(const std::filesystem::path &cShaderFile, const std::string &name);
+    static Texture2D    GetTexture(const std::string &name);
+    static void         Clear();
 private:
     ResourceManager()  = default ;
  
-    static Shader    loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
-   
-    static Texture2D loadTextureFromFile(const char* file, bool alpha);
+    static Shader       loadShaderFromFile(const std::filesystem::path &vShaderFile, const std::filesystem::path &fShaderFile);
+    static Texture2D    loadTextureFromFile(const std::filesystem::path &file, bool alpha);
+    static Shader       loadComputeShaderFromFile(const std::filesystem::path &cShaderFile);
 
-    static Shader loadComputeShaderFromFile(const char* cShaderFile);
+public:
+    static Texture2D GenerateSolidColorTexture(unsigned char r, unsigned char g, unsigned char b, unsigned char a,
+                                               const std::string &name);
 
 
 };

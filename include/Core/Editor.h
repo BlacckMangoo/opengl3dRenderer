@@ -1,8 +1,12 @@
-//
-// Created by lenovo on 15-12-2025.
-//
+#pragma once
 
-#ifndef WATERADVENTURE_EDITOR_H
-#define WATERADVENTURE_EDITOR_H
+// holds state for Gizmos , Selection etc.
 
-#endif //WATERADVENTURE_EDITOR_H
+struct Editor {
+    // inspector state
+    uint32_t selectedObjectIndex = 0 ;
+    void SetSelectedObjectIndex(const uint32_t  index) {
+        selectedObjectIndex = index;
+    }
+
+};

@@ -1,45 +1,86 @@
 #include "App.h"
-#include "Renderer/ResourceManager.h"
+#include <glad/glad.h>
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include "Core/UiManager.h"
+#include "Core/FontSystem.h"
+#include "Core/Utility.h"
+#include "Core/ProceduralGeometryGenerator.h"
+
+void LoadAssets() {
+    ResourceManager::LoadShader("../Assets/lit.vert", "../Assets/lit.frag", "lit");
+    ResourceManager::LoadShader("../Assets/quad.vert", "../Assets/unlit.frag", "unlit");
+    ResourceManager::LoadShader("../Assets/text.vert", "../Assets/text.frag", "text");
+}
 
 
 void Application::Init() const {
     glEnable(GL_DEPTH_TEST);
-    ResourceManager::LoadShader("../Assets/lit.vert", "../Assets/lit.frag", nullptr, "lit");
-    Camera::SetupMouseCallbacks(window->get_GLFW_Window(), scene->camera.get());
+    glEnable(GL_STENCIL_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    LoadAssets();
+    ImguiInit(window->get_GLFW_Window());
 }
+
 
 void Application::Run() {
 
     while ( window->isOpen()) {
-
+        // Calculate deltaTime
         const auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        Update();
+        if (const ImGuiIO& io = ImGui::GetIO(); !io.WantCaptureMouse) {
+            currentScene->camera->ProcessInput(window->get_GLFW_Window(), deltaTime);
+        }
         Render();
+
+        // UI FRAME START
+        {
+
+
         glfwPollEvents();
+        ImGuiBeginFrame();
+
+        // stuff here is updated every frame
+        CameraPropertiesWindow(*currentScene->camera);
+        SceneGraphWindow(*currentScene);
+
+        //inspector ui
+        for ( auto& object : currentScene->objects ) {
+            if ( object.ID == currentScene->editor->selectedObjectIndex ) {
+                TransformWindow(object.transform);
+            }
+        }
+
+        ImGuiEndFrame();
+    }
+        // UI FRAME END
+
         glfwSwapBuffers((window->get_GLFW_Window()));
     }
 
 }
 
-void Application::Update() const {
-    scene->camera->ProcessInput(window->get_GLFW_Window(), deltaTime);
-}
 
 void Application::Render() const {
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Shader& defaultShader = ResourceManager::GetShader("lit");
+    for (const auto& object : currentScene->objects) {
+        if (object.renderable) {
+            renderer->RenderGameObject(object, defaultShader);
+        }
+    }
 
-    // Create a GameObject with a transform and model
-    const Transform transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-    const GameObject gameObject(transform, scene->modelSample);
-    // Render the game object with lit shader
-    renderer->RenderGameObject(gameObject, ResourceManager::GetShader("lit"));
+}
 
-    glBindVertexArray(0);
-
-};
-
+Application::~Application() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
 

@@ -1,10 +1,12 @@
-#include "../include/Renderer/Window.h"
+#include "Renderer/Window.h"
 #include <iostream>
 
 
 Window::~Window() {
+    std::cout << "Window destructor called!" << std::endl;
     glfwDestroyWindow(m_window);
     glfwTerminate();
+    std::cout << "Window destructor finished!" << std::endl;
 }
 
 
@@ -28,7 +30,7 @@ void Window::CreateWindow(const std::string_view  title) {
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1); // Enable vsync
 
-
+    // Set key callback to handle ESC key
     glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -37,6 +39,7 @@ void Window::CreateWindow(const std::string_view  title) {
 
     // Set window close callback
     glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window) {
+        std::cout << "Window close requested!" << std::endl;
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     });
 
@@ -47,8 +50,6 @@ void Window::CreateWindow(const std::string_view  title) {
 
     }
 
-    // Set viewport
-    glViewport(0, 0, m_display_width, m_display_height);
 
 }
 

@@ -14,7 +14,8 @@ public:
     // sets the current shader as active
     Shader& Use();
     // compiles the shader from given source code
-    void    Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr); // note: geometry source code is optional 
+    void    Compile(const char* vertexSource, const char* fragmentSource); // note: geometry source code is optional
+
     void CompileCompute(const char* computeSource);
     // utility functions
     void    SetFloat(const char* name, float value, bool useShader = false);
@@ -32,7 +33,8 @@ public:
     void    SetMat4(const char* name, const glm::mat4& matrix, bool useShader = false) { SetMatrix4(name, matrix, useShader); }
     void    SetMat3(const char* name, const glm::mat3& matrix, bool useShader = false) { SetMatrix3(name, matrix, useShader); }
     void    SetVec3(const char* name, const glm::vec3& value, bool useShader = false) { SetVector3f(name, value, useShader); }
-private:
-    // checks if compilation or linking failed and if so, print the error logs
-    void    checkCompileErrors(unsigned int object, std::string type);
+    void    SetInt(const char* name, int value, bool useShader = false) { SetInteger(name, value, useShader); }
+    void    SetBool(const char* name, bool value, bool useShader = false) { SetInteger(name, static_cast<int>(value), useShader); }
+
+
 };

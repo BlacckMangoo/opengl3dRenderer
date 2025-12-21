@@ -1,6 +1,10 @@
 #pragma once
 #include <Renderer/Mesh.h>
+#include <Renderer/Curve.h>
+//
 // a list of inline header functions to generate procedural meshes and vertices
+//
+
 
 inline Mesh GenerateQuadData() {
     // Define vertices for a quad
@@ -21,5 +25,10 @@ inline Mesh GenerateQuadData() {
     Mesh quadMesh{vertices,indices,{},{}};
 
  return quadMesh;
+}
+
+
+inline Curve GenerateCurveFromPoints(const std::vector<Point>& points ) {
+    return Curve{points};
 }
 

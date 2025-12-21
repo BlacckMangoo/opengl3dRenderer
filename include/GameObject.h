@@ -1,25 +1,25 @@
 #pragma once
 #include "Transform.h"
-#include "Renderer/Model.h"
 #include <memory>
-
+#include <Core/Utility.h>
+#include "Renderer/IRenderable.h"
 class GameObject {
 public:
     Transform transform;
-    std::shared_ptr<Model> model;
+    std::shared_ptr<IRenderable> renderable = nullptr;
+    uint32_t ID = 0;
 
-    GameObject() = default;
+    GameObject(){
+        ID = GenerateGameObjectID();
+    };
 
-    explicit GameObject(const Transform& trans, std::shared_ptr<Model> mod = nullptr)
-        : transform(trans), model(std::move(mod)) {}
+    explicit GameObject(const Transform& trans, std::shared_ptr<IRenderable> rend = nullptr)
+        : transform(trans), renderable(std::move(rend)){     ID = GenerateGameObjectID();
+}
 
-    // Set model for this game object
-    void SetModel(std::shared_ptr<Model> mod) {
-        model = std::move(mod);
-    }
+    explicit GameObject(std::shared_ptr<IRenderable> rend)
+        : renderable(std::move(rend)) {
+        ID = GenerateGameObjectID();
+        }
 
-    // Check if game object has a valid model
-    [[nodiscard]] bool HasModel() const {
-        return model != nullptr;
-    }
 };

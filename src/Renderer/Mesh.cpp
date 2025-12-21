@@ -1,5 +1,6 @@
 #include "Renderer/Mesh.h"
 #include <glad/glad.h>
+#include <string>
 #include "Renderer/ResourceManager.h"
 
 void Mesh::MeshDataInitialise() {
@@ -34,32 +35,32 @@ void Mesh::MeshDataInitialise() {
 
 }
 
-void Mesh::Draw(Shader &shader) const {
-
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
-    unsigned int aoNr = 1;
-
-    for (unsigned int i = 0; i < textures.size(); i++) {
-        glActiveTexture(GL_TEXTURE0 + i);
-        std::string number;
-        std::string name = textures[i].type;
-
-        if (name == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular")
-            number = std::to_string(specularNr++);
-        else if (name == "texture_ao")
-            number = std::to_string(aoNr++);
-
-        shader.SetInteger((name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
+void BindTexture(const int unit, const Texture* texture, const std::string& uniformName, Shader& shader) {
+    if (texture) {
+        glActiveTexture(GL_TEXTURE0 + unit);
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+        shader.SetInt(uniformName.c_str(), unit);
     }
+}
 
+
+ void Mesh::Draw(Shader &shader ) const {
+
+    shader.Use();
+    // Texture samplers
+    // uniform sampler2D u_BaseColorMap;        // slot 0
+    // uniform sampler2D u_MetallicRoughnessMap;// slot 1
+    // uniform sampler2D u_NormalMap;           // slot 2
+    // uniform sampler2D u_OcclusionMap;         // slot 3
+    // uniform sampler2D u_EmissiveMap;          // slot 4
+
+
+
+    // draw mesh
+    glPolygonMode(GL_FRONT_FACE , GL_FILL);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
-    glActiveTexture(GL_TEXTURE0);
 
 
 }

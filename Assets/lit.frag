@@ -4,44 +4,52 @@ out vec4 FragColor;
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
+in vec3 Tangent;
 
-// Textures
-uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_specular1;
-uniform sampler2D texture_ao1;
-
-// Light properties
+// Lighting uniforms
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
 
+// Material uniforms
+//uniform vec4  u_BaseColorFactor;
+//uniform float u_MetallicFactor;
+//uniform float u_RoughnessFactor;
+//uniform vec3  u_EmissiveFactor;
+//
+//
+//// Texture samplers
+//uniform sampler2D u_BaseColorMap;        // slot 0
+//uniform sampler2D u_MetallicRoughnessMap;// slot 1
+//uniform sampler2D u_NormalMap;           // slot 2
+//uniform sampler2D u_OcclusionMap;         // slot 3
+//uniform sampler2D u_EmissiveMap;          // slot 4
+
+
+
 void main()
 {
-    // Sample textures
-    vec3 diffuseColor = texture(texture_diffuse1, TexCoords).rgb;
-    vec3 specularColor = texture(texture_specular1, TexCoords).rgb;
-    float ao = texture(texture_ao1, TexCoords).r;
 
-    // Normalize vectors
+
+    // basic phong lighting model
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(lightPos - FragPos);
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-
-    // Ambient (with AO)
-    vec3 ambient = 0.3 * diffuseColor * ao;
-
-    // Diffuse
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor * diffuseColor;
+    vec3 diffuse = diff * lightColor;
 
-    // Specular
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    vec3 specular = spec * lightColor * specularColor;
+    // ambient
+    vec3 ambient = 0.1 * lightColor;
 
-    // Combine
-    vec3 result = ambient + diffuse + specular;
+    // view direction
+    vec3 viewDir = normalize(viewPos - FragPos);
+    // reflect direction
+    vec3 reflectDir = reflect(-lightDir, norm);
+    // specular
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular = spec * lightColor;
 
+    vec3 result = (ambient + diffuse + specular);
     FragColor = vec4(result, 1.0);
-}
 
+
+}

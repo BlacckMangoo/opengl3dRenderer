@@ -1,9 +1,7 @@
-#include "../../include/Shader.h"
+#include "Shader.h"
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
-
 #include <iostream>
-
 #include "glm/gtc/type_ptr.hpp"
 
 Shader& Shader::Use()
@@ -16,7 +14,7 @@ Shader& Shader::Use()
     return *this;
 }
 
-void Shader::Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource )
+void Shader::Compile(const char* vertexSource, const char* fragmentSource)
 {
     unsigned int gShader = 0;
     int success;
@@ -44,28 +42,12 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
-    // if geometry shader source code is given, also compile geometry shader
-    if (geometrySource != nullptr)
-    {
-        gShader = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(gShader, 1, &geometrySource, nullptr);
-        glCompileShader(gShader);
-        // Check for geometry shader compile errors
-        glGetShaderiv(gShader, GL_COMPILE_STATUS, &success);
-        if (!success) {
-            glGetShaderInfoLog(gShader, 512, nullptr, infoLog);
-            std::cout << "ERROR::SHADER::GEOMETRY::COMPILATION_FAILED\n" << infoLog << std::endl;
-        }
-    }
 
     // shader program
     this->ID = glCreateProgram();
     glAttachShader(this->ID, sVertex);
     glAttachShader(this->ID, sFragment);
-    if (geometrySource != nullptr)
-        glAttachShader(this->ID, gShader);
     glLinkProgram(this->ID);
-    // Check for linking errors
     glGetProgramiv(this->ID, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(this->ID, 512, nullptr, infoLog);
@@ -75,8 +57,6 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
     // delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(sVertex);
     glDeleteShader(sFragment);
-    if (geometrySource != nullptr)
-        glDeleteShader(gShader);
 }
 
 void Shader::CompileCompute(const char* computeSource)
@@ -161,6 +141,7 @@ void Shader::SetMatrix4(const char* name, const glm::mat4& matrix, bool useShade
         glUniformMatrix4fv(location, 1, false, glm::value_ptr(matrix));
     }
 }
+
 void Shader::SetMatrix3(const char* name, const glm::mat3& matrix, bool useShader)
 {
     if (useShader)
@@ -170,3 +151,4 @@ void Shader::SetMatrix3(const char* name, const glm::mat3& matrix, bool useShade
         glUniformMatrix3fv(location, 1, false, glm::value_ptr(matrix));
     }
 }
+

@@ -7,7 +7,6 @@ struct  Transform {
                const glm::vec3 rot  = glm::vec3(0.0f,0.0f,0.0f) ,
                const glm::vec3 scl  = glm::vec3(1.0f,1.0f,1.0f) )
         : position(pos) , rotation(rot) , scale(scl) {
-
     }
 
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -15,7 +14,7 @@ struct  Transform {
     glm::vec3 scale   = glm::vec3(1.0f, 1.0f, 1.0f);
 
 
-   [[nodiscard]] glm::mat4 GetTransform() const {
+   [[nodiscard]] glm::mat4 GetTransformMatrix() const {
        glm::mat4 m(1.0f);
        m = glm::translate(m, position);
        m = glm::rotate(m, rotation.x, glm::vec3(1,0,0));
@@ -24,4 +23,22 @@ struct  Transform {
        m = glm::scale(m, scale);
        return m;
    }
+
+    Transform GetTransform() const {
+       return Transform(position, rotation, scale);
+    }
+
+     void SetPosition(const glm::vec3 &pos) {
+       position = pos;
+   }
+
+    void SetRotation(const glm::vec3 &rot) {
+       rotation = rot;
+   } ;
+
+    void SetScale(const glm::vec3 &scl) {
+       scale = scl;
+   };
+
+
 };

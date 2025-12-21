@@ -10,12 +10,11 @@ public:
     Camera();
 
     void ProcessInput(GLFWwindow* window, float deltaTime);
-    void ProcessMouseMovement(float xoffset, float yoffset);
-    void ProcessMousePan(float xoffset, float yoffset);
+    void ProcessMouseMovement(float xOffset, float yOffset);
+    void ProcessMousePan(float xOffset, float yOffset);
     void ProcessMouseScroll(float yoffset);
 
-    // Set up mouse callbacks - call this once during initialization
-    static void SetupMouseCallbacks(GLFWwindow* window, Camera* camera);
+    static void SetupMouseCallbacks(GLFWwindow* window, Camera* camera); // call once
 
     // Get matrices
     [[nodiscard]] glm::mat4 GetProjectionMatrix(float aspectRatio) const;
@@ -26,25 +25,11 @@ public:
      [[nodiscard]] glm::vec3 GetFront() const { return front; }
      [[nodiscard]] glm::vec3 GetUp() const { return up; }
 
-    // Mouse state
-    bool firstMouse = true;
-    float lastX = 400.0f;
-    float lastY = 300.0f;
-    bool isRotating = false;
-    bool isPanning = false;
-
-private:
-    // Camera properties
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right{};
     glm::vec3 worldUp;
-
-    // Euler angles
-    float yaw;
-    float pitch;
-    float roll;
 
     // Camera settings
     float fov;
@@ -55,6 +40,22 @@ private:
     float mouseSensitivity;
     float panSensitivity;
     float scrollSensitivity;
+
+
+private:
+    bool firstMouse = true;
+    float lastX = 400.0f;
+    float lastY = 300.0f;
+    bool isRotating = false;
+    bool isPanning = false;
+
+
+    // Euler angles
+    float yaw;
+    float pitch;
+    float roll;
+
+
 
 
     void UpdateCameraVectors();

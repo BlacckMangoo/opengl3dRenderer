@@ -1,8 +1,20 @@
-//
-// Created by lenovo on 15-12-2025.
-//
+#pragma once
+#include "GameObject.h"
 
-#ifndef WATERADVENTURE_SCENEGRAPH_H
-#define WATERADVENTURE_SCENEGRAPH_H
+struct Node {
+    GameObject* parent;
+    std::vector<Node*> children;
+};
 
-#endif //WATERADVENTURE_SCENEGRAPH_H
+class SceneGraph {
+    std::vector<Node*> rootNodes;
+
+    void AddNode(Node* node) {
+        rootNodes.push_back(node);
+    }
+
+    static void AddChildren(Node* parent , Node* child ) {
+        parent->children.push_back(child);
+    }
+};
+
