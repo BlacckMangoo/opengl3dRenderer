@@ -56,15 +56,26 @@ inline void CameraPropertiesWindow( Camera& camera) {
 
 // Transform Window for ImGui
 inline void TransformWindow(Transform& transform) {
-    ImGui::Begin(" Transform");
+
     if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
         ImGui::DragFloat3("Rotation", &transform.rotation.x, 0.1f);
         ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
     }
-    ImGui::End();
+
 }
 
+inline void MaterialPropsWindow(Material& material) {
+
+    if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::ColorEdit4("Base Color Factor", &material.baseColorFactor.x);
+        ImGui::DragFloat("Metallic Factor", &material.metallicFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("Roughness Factor", &material.roughnessFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("AO Factor", &material.aoFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::ColorEdit3("Emissive Factor", &material.emissiveFactor.x);
+    }
+
+}
 
 // Scene graph related functions
 

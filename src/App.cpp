@@ -1,18 +1,17 @@
 #include "App.h"
 #include <glad/glad.h>
-
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include "Core/UiManager.h"
-#include "Core/FontSystem.h"
-#include "Core/Utility.h"
 #include "Core/ProceduralGeometryGenerator.h"
+#include "glmDebugger.h"
 
 void LoadAssets() {
     ResourceManager::LoadShader("../Assets/lit.vert", "../Assets/lit.frag", "lit");
     ResourceManager::LoadShader("../Assets/quad.vert", "../Assets/unlit.frag", "unlit");
     ResourceManager::LoadShader("../Assets/text.vert", "../Assets/text.frag", "text");
 }
+
 
 
 void Application::Init() const {
@@ -23,8 +22,8 @@ void Application::Init() const {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     LoadAssets();
     ImguiInit(window->get_GLFW_Window());
-}
 
+}
 
 void Application::Run() {
 
@@ -42,7 +41,6 @@ void Application::Run() {
         // UI FRAME START
         {
 
-
         glfwPollEvents();
         ImGuiBeginFrame();
 
@@ -51,14 +49,20 @@ void Application::Run() {
         SceneGraphWindow(*currentScene);
 
         //inspector ui
-        for ( auto& object : currentScene->objects ) {
-            if ( object.ID == currentScene->editor->selectedObjectIndex ) {
-                TransformWindow(object.transform);
+            ImGui::Begin("Inspector");
+        if (currentScene->editor->selectedObjectIndex < currentScene->objects.size()) {
+            TransformWindow(currentScene->objects[currentScene->editor->selectedObjectIndex].transform);
+            // material window if renderable is a mesh
+            if (auto& selectedObject = currentScene->objects[currentScene->editor->selectedObjectIndex]; selectedObject.renderable) {
+                if (const auto meshPtr = std::dynamic_pointer_cast<Model>(selectedObject.renderable)) {
+                    MaterialPropsWindow(meshPtr->meshes[0].material);
+                }
             }
-        }
+            ImGui::End();
 
         ImGuiEndFrame();
-    }
+    };
+        }
         // UI FRAME END
 
         glfwSwapBuffers((window->get_GLFW_Window()));
@@ -72,7 +76,7 @@ void Application::Render() const {
     Shader& defaultShader = ResourceManager::GetShader("lit");
     for (const auto& object : currentScene->objects) {
         if (object.renderable) {
-            renderer->RenderGameObject(object, defaultShader);
+            renderer->RenderGameObject(object);
         }
     }
 
@@ -83,4 +87,3 @@ Application::~Application() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
-

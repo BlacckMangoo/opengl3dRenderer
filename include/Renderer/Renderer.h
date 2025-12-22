@@ -30,7 +30,7 @@ struct RenderCommand {
     PrimitiveType primitiveType = TRIANGLES;
     FillMode fillMode = FILL;
 
-    unsigned int GetGLPrimitiveType() const {
+    [[nodiscard]] unsigned int GetGLPrimitiveType() const {
         switch(primitiveType) {
             case TRIANGLES: return GL_TRIANGLES;
             case LINES: return GL_LINES;
@@ -39,7 +39,7 @@ struct RenderCommand {
         }
     }
 
-    unsigned int GetGLPolygonMode() const {
+    [[nodiscard]] unsigned int GetGLPolygonMode() const {
         switch(fillMode) {
             case FILL: return GL_FILL;
             case LINE: return GL_LINE;
@@ -56,7 +56,7 @@ struct RenderCommand {
 class Renderer {
 public:
     Renderer(Camera& camera, Window& window) : camera(camera), window(window) {}
-    void RenderGameObject(const GameObject& gameObject, Shader& shader);
+    void RenderGameObject(const GameObject &gameObject);
     void SetupCameraUniforms(Shader& shader) const;
 
     static void SetupModelMatrix(Shader& shader, const Transform& transform);
@@ -64,8 +64,8 @@ public:
 
     static void DrawCurve(const Curve& curve);
 
-    Camera& GetCamera() const { return camera; }
-    Window& GetWindow() const { return window; }
+    [[nodiscard]] Camera& GetCamera() const { return camera; }
+    [[nodiscard]] Window& GetWindow() const { return window; }
 
 private:
     Camera& camera;

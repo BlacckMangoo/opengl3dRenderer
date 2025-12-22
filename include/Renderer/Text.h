@@ -19,6 +19,6 @@ public:
     Text(std::string  text, const glm::vec3 color, const float scale, std::shared_ptr<Font> f)
         : content(std::move(text)), color(color), scale(scale), font(std::move(f)) {}
 
-    void Render(Renderer& renderer, Shader& shader, const Transform& transform) override;
+    void Render(Renderer &renderer, const Transform &transform) override;
 };
 

@@ -6,9 +6,14 @@
 #include "Renderer/IRenderable.h"
 
 struct Model final : public IRenderable {
-    std::vector<Mesh> meshes;
+    Model() = default ;
+    explicit Model( const std::vector<Mesh> &meshes ) : meshes(meshes) {};
+    explicit Model (const Mesh& mesh ) {
+        meshes.push_back(mesh);
+    }
 
-    void Render(Renderer& renderer, Shader& shader, const Transform& transform) override;
+    std::vector<Mesh> meshes;
+    void Render(Renderer &renderer, const Transform &transform) override;
 };
 
 class ModelLoader {

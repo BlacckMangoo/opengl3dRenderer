@@ -1,9 +1,7 @@
 #pragma once
 #include <Renderer/Mesh.h>
 #include <Renderer/Curve.h>
-//
-// a list of inline header functions to generate procedural meshes and vertices
-//
+
 
 
 inline Mesh GenerateQuadData() {
@@ -31,4 +29,6 @@ inline Mesh GenerateQuadData() {
 inline Curve GenerateCurveFromPoints(const std::vector<Point>& points ) {
     return Curve{points};
 }
+
+
 

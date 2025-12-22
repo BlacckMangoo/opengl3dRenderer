@@ -20,24 +20,24 @@ void Curve::CurveDataInitialise() {
     glBindVertexArray(0);
 }
 
-void Curve::Render(Renderer& renderer, Shader& shader, const Transform& transform) {
+void Curve::Render(Renderer &renderer, const Transform &transform) {
     // Curves use unlit shader
     Shader& unlitShader = ResourceManager::GetShader("unlit");
     renderer.SetupCameraUniforms(unlitShader);
-    renderer.SetupModelMatrix(unlitShader, transform);
+    Renderer::SetupModelMatrix(unlitShader, transform);
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_LINE_LOOP, 0, points.size());
     glBindVertexArray(0);
 }
 
-void Glyph::Render(Renderer& renderer, Shader& shader, const Transform& transform) {
+void Glyph::Render(Renderer &renderer, const Transform &transform) {
     // Glyphs use unlit shader for wireframe text
     Shader& unlitShader = ResourceManager::GetShader("unlit");
     renderer.SetupCameraUniforms(unlitShader);
-    renderer.SetupModelMatrix(unlitShader, transform);
+    Renderer::SetupModelMatrix(unlitShader, transform);
 
     for (auto& curve : curves) {
-        renderer.DrawCurve(*curve);
+        Renderer::DrawCurve(*curve);
     }
 }

@@ -34,10 +34,12 @@ struct Material {
     Texture* aoMap = nullptr ;
     Texture* emissiveMap = nullptr ;
 
-    glm::vec4 baseColorFactor = glm::vec4(1.0f) ;
-    float metallicFactor = 1.0f ;
-    float roughnessFactor = 1.0f ;
-    glm::vec3 emissiveFactor = glm::vec3(0.0f) ;
+    glm::vec4 baseColorFactor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+    float metallicFactor     = 0.0f;
+    float roughnessFactor    = 0.5f;
+    float aoFactor           = 1.0f;
+    glm::vec3 emissiveFactor = glm::vec3(0.0f);
+
 
 };
 
@@ -63,6 +65,4 @@ public:
     } ;
 
     void MeshDataInitialise() ;
-    void Draw(Shader &shader) const;
-
      };

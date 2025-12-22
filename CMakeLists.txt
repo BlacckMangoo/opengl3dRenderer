@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
-project(WaterAdventure)
+project(WaterAdventure C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_UNITY_BUILD ON)
-# Optimization: Enable Interprocedural Optimization (LTO) for Release builds
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
 
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+
 
 
 # GLFW
@@ -92,13 +92,16 @@ target_include_directories(imgui PUBLIC
 target_link_libraries(imgui PUBLIC glfw)
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
 
+add_library(glad_c STATIC Deps/glad/src/glad.c
+        include/glmDebugger.h
+        include/FastNoise.h)
+target_include_directories(glad_c PUBLIC Deps/glad/include)
 
 
 # Gather all source files
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
 add_executable(WaterAdventure ${SRC_FILES}
-        Deps/glad/src/glad.c
         Deps/stb/src/stb_image_impl.cpp
         include/Renderer/Window.h
         include/Core/Camera.h
@@ -109,17 +112,13 @@ add_executable(WaterAdventure ${SRC_FILES}
         include/Core/UiManager.h
 )
 
-# Optimization: Add compiler flags for performance
-if(MSVC)
-    target_compile_options(WaterAdventure PRIVATE /O2 /Oi /Ot /Oy)
-else()
-    target_compile_options(WaterAdventure PRIVATE -O3 -march=native)
-endif()
+set_target_properties(WaterAdventure PROPERTIES
+        LINKER_LANGUAGE CXX
+)
 
 target_include_directories(WaterAdventure PRIVATE
         include
         src
-        Deps/glad/include
         ${GLFW_SOURCE_DIR}/include
         ${GLM_SOURCE_DIR}
         ${imgui_SOURCE_DIR}
@@ -127,7 +126,18 @@ target_include_directories(WaterAdventure PRIVATE
         ${stb_SOURCE_DIR}
         ${fastgltf_SOURCE_DIR}/include
         ${freetype_SOURCE_DIR}/include
+        ${libigl_SOURCE_DIR}/include
 
 )
 
-target_link_libraries(WaterAdventure PRIVATE glfw glm::glm  imgui fastgltf freetype)
+#PCH
+target_precompile_headers(WaterAdventure PRIVATE
+        <vector>
+        <string>
+        <unordered_map>
+        <glm/glm.hpp>
+)
+target_link_libraries(WaterAdventure PRIVATE glad_c)
+
+target_link_libraries(WaterAdventure PRIVATE glfw glm::glm  imgui fastgltf freetype )
+

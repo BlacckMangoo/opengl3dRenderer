@@ -16,7 +16,7 @@ uniform mat3 normalMatrix;
 
 void main()
 {
-    vec4 worldPos = model * vec4(aPos, 1.0);
+    vec4 worldPos = view*model * vec4(aPos, 1.0);
     FragPos = vec3(worldPos);
 
     Normal = normalize(normalMatrix * aNormal);

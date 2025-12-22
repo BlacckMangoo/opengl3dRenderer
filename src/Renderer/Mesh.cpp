@@ -32,7 +32,6 @@ void Mesh::MeshDataInitialise() {
 
     glBindVertexArray(0);
 
-
 }
 
 void BindTexture(const int unit, const Texture* texture, const std::string& uniformName, Shader& shader) {
@@ -44,23 +43,3 @@ void BindTexture(const int unit, const Texture* texture, const std::string& unif
 }
 
 
- void Mesh::Draw(Shader &shader ) const {
-
-    shader.Use();
-    // Texture samplers
-    // uniform sampler2D u_BaseColorMap;        // slot 0
-    // uniform sampler2D u_MetallicRoughnessMap;// slot 1
-    // uniform sampler2D u_NormalMap;           // slot 2
-    // uniform sampler2D u_OcclusionMap;         // slot 3
-    // uniform sampler2D u_EmissiveMap;          // slot 4
-
-
-
-    // draw mesh
-    glPolygonMode(GL_FRONT_FACE , GL_FILL);
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
-
-
-}

@@ -70,8 +70,8 @@ Model ModelLoader::LoadGLTF( const std::filesystem::path &path) {
 
         // process vertices
         const auto* positionIt = primitive.findAttribute("POSITION");
-        auto& posAccessor = asset.accessors[positionIt->accessorIndex];
 
+        auto& posAccessor = asset.accessors[positionIt->accessorIndex];
         vertices.resize(posAccessor.count);
 
         // positions
@@ -82,55 +82,84 @@ Model ModelLoader::LoadGLTF( const std::filesystem::path &path) {
         );
 
         // normals
-        const auto* normalIt = primitive.findAttribute("NORMAL") ;
-        auto& normalAccessor = asset.accessors[normalIt->accessorIndex];
-
-
-        if ( bool validNormal =  normalAccessor.type == fastgltf::AccessorType::Vec3 ) {
-            fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, normalAccessor,
-                [&](fastgltf::math::fvec3 n, size_t i) {
-                    vertices[i].normal = glm::vec3(n.x(), n.y(), n.z());
-                }
-            );
-        }
-        else {
-            // if no normals are present, set default normals
-            for (auto& vertex : vertices) {
-                vertex.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+        const auto* normalIt = primitive.findAttribute("NORMAL");
+        bool hasNormals = normalIt && normalIt->accessorIndex < asset.accessors.size();
+        if (hasNormals) {
+            auto& normalAccessor = asset.accessors[normalIt->accessorIndex];
+            if (normalAccessor.type == fastgltf::AccessorType::Vec3) {
+                fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(asset, normalAccessor,
+                    [&](fastgltf::math::fvec3 n, const size_t i) {
+                        vertices[i].normal = glm::vec3(n.x(), n.y(), n.z());
+                    }
+                );
+            } else {
+                hasNormals = false; // Fallback to generating normals
             }
+        }
+        if (!hasNormals) {
+            // Generate normals from positions and indices
+            // Initialize normals to zero
+            for (auto& vertex : vertices) {
+                vertex.normal = glm::vec3(0.0f);
+            }
+            // For each triangle, compute face normal and accumulate
+            for (size_t i = 0; i + 2 < indices.size(); i += 3) {
+                unsigned int ia = indices[i];
+                unsigned int ib = indices[i + 1];
+                unsigned int ic = indices[i + 2];
+                if (ia >= vertices.size() || ib >= vertices.size() || ic >= vertices.size()) continue;
+                glm::vec3& a = vertices[ia].position;
+                glm::vec3& b = vertices[ib].position;
+                glm::vec3& c = vertices[ic].position;
+                const glm::vec3 normal = glm::normalize(glm::cross(b - a, c - a));
+                vertices[ia].normal += normal;
+                vertices[ib].normal += normal;
+                vertices[ic].normal += normal;
+            }
+            // Normalize all normals
+            for (auto& vertex : vertices) {
+                vertex.normal = glm::normalize(vertex.normal);
+            }
+            std::cout << "Generated normals for mesh: " << mesh.name << std::endl;
         }
 
         // tangents
-
-        const auto* uvIt = primitive.findAttribute("TEXCOORD_0");
-        auto& uvAccessor = asset.accessors[uvIt->accessorIndex];
-
-        if ( bool validUV = uvAccessor.type == fastgltf::AccessorType::Vec2 ) {
-            fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(asset, uvAccessor,
-                [&](fastgltf::math::fvec2 uv, size_t i) {
-                    vertices[i].uv = glm::vec2(uv.x(), uv.y());
+        if (const auto* uvIt = primitive.findAttribute("TEXCOORD_0"); uvIt && uvIt->accessorIndex < asset.accessors.size()) {
+            auto& uvAccessor = asset.accessors[uvIt->accessorIndex];
+            if ( bool validUV = uvAccessor.type == fastgltf::AccessorType::Vec2 ) {
+                fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(asset, uvAccessor,
+                    [&](fastgltf::math::fvec2 uv, size_t i) {
+                        vertices[i].uv = glm::vec2(uv.x(), uv.y());
+                    }
+                );
+            }
+            else {
+                for (auto& vertex : vertices) {
+                    vertex.uv = glm::vec2(0.0f, 0.0f);
                 }
-            );
-        }
-        else {
-            // if no uvs are present, set default uvs
+            }
+        } else {
             for (auto& vertex : vertices) {
                 vertex.uv = glm::vec2(0.0f, 0.0f);
             }
         }
 
         const auto* tangentIt = primitive.findAttribute("TANGENT");
-        auto& tangentAccessor = asset.accessors[tangentIt->accessorIndex];
-
-        if ( bool validTangent = tangentAccessor.type == fastgltf::AccessorType::Vec4  ) {
-            fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec4>(asset, tangentAccessor,
-                [&](fastgltf::math::fvec4 t, const size_t i) {
-                    vertices[i].tangent = glm::vec4(t.x(), t.y(), t.z(),t.w());
+        if (tangentIt && tangentIt->accessorIndex < asset.accessors.size()) {
+            auto& tangentAccessor = asset.accessors[tangentIt->accessorIndex];
+            if ( bool validTangent = tangentAccessor.type == fastgltf::AccessorType::Vec4  ) {
+                fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec4>(asset, tangentAccessor,
+                    [&](fastgltf::math::fvec4 t, const size_t i) {
+                        vertices[i].tangent = glm::vec4(t.x(), t.y(), t.z(),t.w());
+                    }
+                );
+            }
+            else {
+                for (auto& vertex : vertices) {
+                    vertex.tangent = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
                 }
-            );
-        }
-        else {
-            // if no tangents are present, set default tangents
+            }
+        } else {
             for (auto& vertex : vertices) {
                 vertex.tangent = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
             }

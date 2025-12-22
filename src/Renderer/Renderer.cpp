@@ -3,7 +3,8 @@
 #include "Renderer/Curve.h"
 #include "Renderer/ModelLoader.h"
 #include "Core/Camera.h"
-
+#include "glm/gtx/string_cast.hpp"
+#include <iostream>
 void Renderer::SetupCameraUniforms(Shader& shader) const {
     shader.Use();
     const float aspectRatio = window.getAspectRatio();
@@ -17,15 +18,22 @@ void Renderer::SetupModelMatrix(Shader& shader, const Transform& transform) {
     shader.SetMat4("model", modelMatrix);
 }
 
-void Renderer::RenderGameObject(const GameObject& gameObject, Shader& shader) {
+void Renderer::RenderGameObject(const GameObject& gameObject) {
     if (gameObject.renderable) {
-
-        gameObject.renderable->Render(*this, shader, gameObject.transform);
+        gameObject.renderable->Render(*this, gameObject.transform);
     }
 }
 
 void Renderer::DrawMesh(const Mesh& mesh, Shader& shader, const RenderCommand& command) {
     shader.Use();
+    // Set material uniforms constants
+
+    shader.SetFloat("u_aoFactor" , mesh.material.aoFactor);
+    shader.SetFloat("u_metallicFactor" , mesh.material.metallicFactor);
+    shader.SetFloat("u_roughnessFactor" , mesh.material.roughnessFactor);
+    shader.SetVector4f("u_BaseColorFactor" , mesh.material.baseColorFactor);
+    shader.SetVec3("u_emissiveFactor" , mesh.material.emissiveFactor);
+
     glPolygonMode(GL_FRONT_AND_BACK, command.GetGLPolygonMode());
     glBindVertexArray(mesh.VAO);
     glDrawElements(command.GetGLPrimitiveType(), mesh.indexCount, GL_UNSIGNED_INT, nullptr);
@@ -42,9 +50,12 @@ void Renderer::DrawCurve(const Curve& curve) {
 // ============ IRenderable Implementations ============
 
 
-void Model::Render(Renderer& renderer, Shader& shader, const Transform& transform) {
+void Model::Render(Renderer &renderer, const Transform &transform) {
+    Shader& shader = ResourceManager::GetShader("lit");
     renderer.SetupCameraUniforms(shader);
     Renderer::SetupModelMatrix(shader, transform);
+
+    // material uniforms
 
     const glm::mat4 modelMatrix = transform.GetTransformMatrix();
     const glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelMatrix)));
@@ -56,4 +67,3 @@ void Model::Render(Renderer& renderer, Shader& shader, const Transform& transfor
         Renderer::DrawMesh(mesh, shader, RenderCommand::Default());
     }
 }
-

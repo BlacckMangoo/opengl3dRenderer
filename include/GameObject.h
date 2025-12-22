@@ -14,7 +14,7 @@ public:
     };
 
     explicit GameObject(const Transform& trans, std::shared_ptr<IRenderable> rend = nullptr)
-        : transform(trans), renderable(std::move(rend)){     ID = GenerateGameObjectID();
+        : transform(trans), renderable(std::move(rend)){ transform = trans ;  ID = GenerateGameObjectID();
 }
 
     explicit GameObject(std::shared_ptr<IRenderable> rend)

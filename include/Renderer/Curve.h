@@ -16,7 +16,7 @@ public:
         points = pts;
         CurveDataInitialise();
     }
-    void Render(Renderer& renderer, Shader& shader, const Transform& transform) override;
+    void Render(Renderer &renderer, const Transform &transform) override;
 };
 
 // A glyph/character is made of multiple curves (contours)
@@ -30,7 +30,7 @@ public:
         }
     }
 
-    void Render(Renderer& renderer, Shader& shader, const Transform& transform) override;
+    void Render(Renderer &renderer, const Transform &transform) override;
 };
 
 
