@@ -15,7 +15,7 @@ uniform vec3 viewPos;
 uniform vec4  u_BaseColorFactor;
 uniform float u_MetallicFactor;
 uniform float u_RoughnessFactor;
-uniform float u_aoFactor;
+uniform float u_AoFactor;
 uniform vec3  u_EmissiveFactor;
 
 
@@ -98,7 +98,7 @@ void main()
     float NdotL = max(dot(N, L), 0.0);
 
     // add to outgoing radiance Lo
-    vec3 ambient = vec3(0.03) * u_BaseColorFactor.rgb * u_aoFactor;
+    vec3 ambient = vec3(0.03) * u_BaseColorFactor.rgb * u_AoFactor;
     vec3 color = ambient + (kD * u_BaseColorFactor.rgb / PI + specular) * lightColor * NdotL;
 
     // emissive

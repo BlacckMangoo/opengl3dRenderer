@@ -28,11 +28,11 @@ void Renderer::DrawMesh(const Mesh& mesh, Shader& shader, const RenderCommand& c
     shader.Use();
     // Set material uniforms constants
 
-    shader.SetFloat("u_aoFactor" , mesh.material.aoFactor);
-    shader.SetFloat("u_metallicFactor" , mesh.material.metallicFactor);
-    shader.SetFloat("u_roughnessFactor" , mesh.material.roughnessFactor);
+    shader.SetFloat("u_AoFactor" , mesh.material.aoFactor);
+    shader.SetFloat("u_MetallicFactor" , mesh.material.metallicFactor);
+    shader.SetFloat("u_RoughnessFactor" , mesh.material.roughnessFactor);
     shader.SetVector4f("u_BaseColorFactor" , mesh.material.baseColorFactor);
-    shader.SetVec3("u_emissiveFactor" , mesh.material.emissiveFactor);
+    shader.SetVec3("u_EmissiveFactor" , mesh.material.emissiveFactor);
 
     glPolygonMode(GL_FRONT_AND_BACK, command.GetGLPolygonMode());
     glBindVertexArray(mesh.VAO);

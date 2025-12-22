@@ -86,8 +86,7 @@ inline void SceneGraphWindow(const Scene& scene) {
 
     for (const auto& object : scene.objects) {
         std::string objName = "Object " + std::to_string(object.ID);
-        bool isSelected = (scene.editor->selectedObjectIndex == object.ID);
-        if (ImGui::Selectable(objName.c_str(), isSelected)) {
+        if (const bool isSelected = (scene.editor->selectedObjectIndex == object.ID); ImGui::Selectable(objName.c_str(), isSelected)) {
            scene.editor->SetSelectedObjectIndex(object.ID);
         }
     }
