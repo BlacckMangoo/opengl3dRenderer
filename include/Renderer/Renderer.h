@@ -55,7 +55,10 @@ struct RenderCommand {
 
 class Renderer {
 public:
-    Renderer(Camera& camera, Window& window) : camera(camera), window(window) {}
+    Renderer(Camera& camera, Window& window) : camera(camera), window(window) {
+        InitScreenQuad();
+        InitFramebuffer(window.getWidth(), window.getHeight());
+    }
     void RenderGameObject(const GameObject &gameObject);
     void SetupCameraUniforms(Shader& shader) const;
 
@@ -64,8 +67,22 @@ public:
 
     static void DrawCurve(const Curve& curve);
 
+    void InitScreenQuad();
+    void BeginScenePass() const;
+    void EndScenePass() const;
+    void InitFramebuffer(int width, int height);
     [[nodiscard]] Camera& GetCamera() const { return camera; }
     [[nodiscard]] Window& GetWindow() const { return window; }
+
+    Shader& screenShader = ResourceManager::GetShader("screen");
+
+    unsigned int quadVAO = 0;
+    unsigned int quadVBO = 0;
+    unsigned int fbo = 0; // Default Framebuffer Object
+    unsigned int colorTexture = 0;
+    unsigned int depthTexture = 0;
+    unsigned int rbo = 0;
+
 
 private:
     Camera& camera;
