@@ -29,7 +29,6 @@ public:
             curves.push_back(std::make_shared<Curve>(contour));
         }
     }
-
     void Render(Renderer &renderer, const Transform &transform) override;
 };
 

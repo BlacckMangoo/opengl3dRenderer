@@ -9,7 +9,7 @@
 class FontSystem;
 class Scene;
 class GameObject;
-class Mesh;
+class Primitive;
 class Curve;
 class Text;
 class Camera;
@@ -63,7 +63,7 @@ public:
     void SetupCameraUniforms(Shader& shader) const;
 
     static void SetupModelMatrix(Shader& shader, const Transform& transform);
-    static void DrawMesh(const Mesh& mesh, Shader& shader, const RenderCommand& command);
+    static void DrawPrimitive(const Primitive& prim, Shader& shader, const RenderCommand& command);
 
     static void DrawCurve(const Curve& curve);
 

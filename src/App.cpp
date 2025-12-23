@@ -48,8 +48,8 @@ void Application::Run() {
             TransformWindow(currentScene->objects[currentScene->editor->selectedObjectIndex].transform);
             // material window if renderable is a mesh
             if (auto& selectedObject = currentScene->objects[currentScene->editor->selectedObjectIndex]; selectedObject.renderable) {
-                if (const auto meshPtr = std::dynamic_pointer_cast<Model>(selectedObject.renderable)) {
-                    MaterialPropsWindow(meshPtr->meshes[0].material);
+                if (const auto meshPtr = std::dynamic_pointer_cast<Mesh>(selectedObject.renderable)) {
+                    MaterialPropsWindow(meshPtr->mesh[0].material);
                 }
             }
             ImGui::End();

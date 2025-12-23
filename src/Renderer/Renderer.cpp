@@ -24,19 +24,19 @@ void Renderer::RenderGameObject(const GameObject& gameObject) {
     }
 }
 
-void Renderer::DrawMesh(const Mesh& mesh, Shader& shader, const RenderCommand& command) {
+void Renderer::DrawPrimitive(const Primitive& prim, Shader& shader, const RenderCommand& command) {
     shader.Use();
     // Set material uniforms constants
 
-    shader.SetFloat("u_AoFactor" , mesh.material.aoFactor);
-    shader.SetFloat("u_MetallicFactor" , mesh.material.metallicFactor);
-    shader.SetFloat("u_RoughnessFactor" , mesh.material.roughnessFactor);
-    shader.SetVector4f("u_BaseColorFactor" , mesh.material.baseColorFactor);
-    shader.SetVec3("u_EmissiveFactor" , mesh.material.emissiveFactor);
+    shader.SetFloat("u_AoFactor" , prim.material.aoFactor);
+    shader.SetFloat("u_MetallicFactor" , prim.material.metallicFactor);
+    shader.SetFloat("u_RoughnessFactor" , prim.material.roughnessFactor);
+    shader.SetVector4f("u_BaseColorFactor" , prim.material.baseColorFactor);
+    shader.SetVec3("u_EmissiveFactor" , prim.material.emissiveFactor);
 
     glPolygonMode(GL_FRONT_AND_BACK, command.GetGLPolygonMode());
-    glBindVertexArray(mesh.VAO);
-    glDrawElements(command.GetGLPrimitiveType(), mesh.indexCount, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(prim.VAO);
+    glDrawElements(command.GetGLPrimitiveType(), prim.indexCount, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
@@ -50,7 +50,7 @@ void Renderer::DrawCurve(const Curve& curve) {
 // ============ IRenderable Implementations ============
 
 
-void Model::Render(Renderer &renderer, const Transform &transform) {
+void Mesh::Render(Renderer &renderer, const Transform &transform) {
     Shader& shader = ResourceManager::GetShader("lit");
     renderer.SetupCameraUniforms(shader);
     Renderer::SetupModelMatrix(shader, transform);
@@ -63,8 +63,8 @@ void Model::Render(Renderer &renderer, const Transform &transform) {
     shader.SetVec3("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
     shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-    for (const auto& mesh : meshes) {
-        Renderer::DrawMesh(mesh, shader, RenderCommand::Default());
+    for (const auto& prim : mesh) {
+        Renderer::DrawPrimitive(prim, shader, RenderCommand::Default());
     }
 }
 

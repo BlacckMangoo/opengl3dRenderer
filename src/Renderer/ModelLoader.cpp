@@ -5,10 +5,10 @@
 #include <iostream>
 
 
-Model ModelLoader::LoadGLTF( const std::filesystem::path &path) {
+Mesh ModelLoader::LoadGLTF( const std::filesystem::path &path) {
     // Parse the glTF file and get the constructed asset
     {
-        Model model;
+        Mesh model;
 
 
         fastgltf::Parser parser{};
@@ -39,12 +39,11 @@ Model ModelLoader::LoadGLTF( const std::filesystem::path &path) {
     }
 }
 
-    void ModelLoader::ProcessNode( fastgltf::Node &node, fastgltf::Asset &asset , Model& model )  {
+    void ModelLoader::ProcessNode( fastgltf::Node &node, fastgltf::Asset &asset , Mesh& model )  {
       // process current node
 
-    if (!node.meshIndex .has_value())
-        return ;
-        model.meshes.push_back(ProcessMesh( asset.meshes[*node.meshIndex], asset ));
+    if (!node.meshIndex .has_value())        return ;
+    model.mesh.push_back(ProcessPrimtives( asset.meshes[*node.meshIndex], asset ));
      // recursively process children
       for (const auto& childIndex : node.children) {
           auto& childNode = asset.nodes[childIndex];
@@ -52,7 +51,8 @@ Model ModelLoader::LoadGLTF( const std::filesystem::path &path) {
       }
     };
 
-    Mesh ModelLoader::ProcessMesh(fastgltf::Mesh &mesh , const fastgltf::Asset &asset  ) {
+
+    Primitive ModelLoader::ProcessPrimtives(fastgltf::Mesh &mesh , const fastgltf::Asset &asset  ) {
         std::vector<Vertex> vertices ;
         std::vector<unsigned int> indices ;
 
@@ -165,5 +165,5 @@ Model ModelLoader::LoadGLTF( const std::filesystem::path &path) {
             }
         }
 
-        return Mesh{vertices, indices , {} ,{}} ;
+        return Primitive{vertices, indices , {} ,{}} ;
     }

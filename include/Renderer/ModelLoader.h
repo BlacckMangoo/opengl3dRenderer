@@ -2,17 +2,17 @@
 #include <filesystem>
 #include <vector>
 #include <fastgltf/types.hpp>
-#include "Renderer/Mesh.h"
+#include "Renderer/Primitive.h"
 #include "Renderer/IRenderable.h"
 
-struct Model final : public IRenderable {
-    Model() = default ;
-    explicit Model( const std::vector<Mesh> &meshes ) : meshes(meshes) {};
-    explicit Model (const Mesh& mesh ) {
-        meshes.push_back(mesh);
+struct Mesh final : public IRenderable {
+    Mesh() = default ;
+    explicit Mesh( const std::vector<Primitive> &prims ) : mesh(prims) {};
+    explicit Mesh (const Primitive& prim ) {
+        mesh.push_back(prim);
     }
 
-    std::vector<Mesh> meshes;
+    std::vector<Primitive> mesh;
     void Render(Renderer &renderer, const Transform &transform) override;
 };
 
@@ -22,8 +22,8 @@ class ModelLoader {
      explicit ModelLoader( const std::filesystem::path &path )  {
         LoadGLTF(path);
     }
-    static Model LoadGLTF(  const std::filesystem::path &path ) ;
-    static void ProcessNode(fastgltf::Node &node, fastgltf::Asset &asset, Model &model) ;
-    static  Mesh ProcessMesh(fastgltf::Mesh &mesh, const fastgltf::Asset &asset) ;
+    static Mesh LoadGLTF(  const std::filesystem::path &path ) ;
+    static void ProcessNode(fastgltf::Node &node, fastgltf::Asset &asset, Mesh &model) ;
+    static  Primitive ProcessPrimtives(fastgltf::Mesh &mesh, const fastgltf::Asset &asset) ;
 
 };

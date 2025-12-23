@@ -1,10 +1,10 @@
 #pragma once
-#include <Renderer/Mesh.h>
+#include <Renderer/Primitive.h>
 #include <Renderer/Curve.h>
 
 
 
-inline Mesh GenerateQuadData() {
+inline Primitive GenerateQuadData() {
     // Define vertices for a quad
     const std::vector<Vertex> vertices = {
         // positions          // normals         // tangents           // uvs
@@ -20,7 +20,7 @@ inline Mesh GenerateQuadData() {
         2, 3, 0
     };
 
-    Mesh quadMesh{vertices,indices,{},{}};
+    Primitive quadMesh{vertices,indices,{},{}};
 
  return quadMesh;
 }
