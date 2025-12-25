@@ -16,10 +16,7 @@ inline void ImguiInit(GLFWwindow* window) {
     ImGui_ImplOpenGL3_Init("#version 430");
 
     ImGuiStyle& style = ImGui::GetStyle();
-    ImGui::GetIO().FontGlobalScale = 1.5f;
-    style.WindowRounding = 5.3f;
-    style.FrameRounding = 2.3f;
-    style.ScrollbarRounding = 0;
+
 
 }
 
