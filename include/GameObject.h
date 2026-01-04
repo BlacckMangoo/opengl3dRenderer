@@ -1,25 +1,22 @@
 #pragma once
 #include "Transform.h"
 #include <memory>
+#include <utility>
 #include <Core/Utility.h>
 #include "Renderer/IRenderable.h"
 class GameObject {
 public:
-    Transform transform;
+    Transform transform ;
     std::shared_ptr<IRenderable> renderable = nullptr;
     uint32_t ID = 0;
+    std::string name;
 
     GameObject(){
         ID = GenerateGameObjectID();
     };
-
-    explicit GameObject(const Transform& trans, std::shared_ptr<IRenderable> rend = nullptr)
-        : transform(trans), renderable(std::move(rend)){ transform = trans ;  ID = GenerateGameObjectID();
+    //we use move for name to avoid unnecessary copies of name string and shared_ptr for renderable to manage memory automatically
+    explicit GameObject( const Transform& trans, std::shared_ptr<IRenderable> rend = nullptr , std::string n = "")
+        : transform(trans), renderable(std::move(rend)){ transform = trans ;  ID = GenerateGameObjectID() ; name = std::move(n);
 }
-
-    explicit GameObject(std::shared_ptr<IRenderable> rend)
-        : renderable(std::move(rend)) {
-        ID = GenerateGameObjectID();
-        }
 
 };

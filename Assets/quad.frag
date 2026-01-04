@@ -3,9 +3,11 @@ out vec4 FragColor;
 in vec2 TexCoord;
 
 uniform sampler2D screenTexture;
+uniform int showDepth;
 
 void main()
 {
+
 
     // gamma correct
     vec3 col = texture(screenTexture, TexCoord).rgb;
@@ -22,8 +24,8 @@ void main()
     // gamma correct back
     col = pow(col, vec3(2.2));
 
+
+
     FragColor = vec4(col, 1.0);
-
-
 
 }

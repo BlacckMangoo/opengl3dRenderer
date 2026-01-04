@@ -3,9 +3,15 @@
 
 struct  Transform {
 
-    explicit Transform(const glm::vec3 pos  = glm::vec3(0.0f,0.0f,0.0f) ,
-               const glm::vec3 rot  = glm::vec3(0.0f,0.0f,0.0f) ,
-               const glm::vec3 scl  = glm::vec3(1.0f,1.0f,1.0f) )
+    Transform() {
+        position = glm::vec3(0.0f, 0.0f, 0.0f);
+        position = glm::vec3(0.0f, 0.0f, 0.0f);
+        scale = glm::vec3(1.0f, 1.0f, 1.0f);
+    };
+
+    explicit Transform(const glm::vec3 pos ,
+               const glm::vec3 rot   ,
+               const glm::vec3 scl  )
         : position(pos) , rotation(rot) , scale(scl) {
     }
 
@@ -24,7 +30,7 @@ struct  Transform {
        return m;
    }
 
-    Transform GetTransform() const {
+    [[nodiscard]] Transform GetTransform() const {
        return Transform(position, rotation, scale);
     }
 

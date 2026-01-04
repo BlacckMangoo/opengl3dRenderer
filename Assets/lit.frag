@@ -21,17 +21,6 @@ uniform vec3  u_EmissiveFactor;
 
 
 
-
-//// Texture samplers
-//uniform sampler2D u_BaseColorMap;        // slot 0
-//uniform sampler2D u_MetallicRoughnessMap;// slot 1
-//uniform sampler2D u_NormalMap;           // slot 2
-//uniform sampler2D u_OcclusionMap;         // slot 3
-//uniform sampler2D u_EmissiveMap;          // slot 4
-
-// basic PBR without textures
-
-
 const float PI = 3.14159265359;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)

@@ -5,7 +5,6 @@
 #include <imgui_impl_glfw.h>
 #include <Core/Camera.h>
 
-#include "SceneGraph .h"
 
 inline void ImguiInit(GLFWwindow* window) {
     IMGUI_CHECKVERSION();
@@ -85,9 +84,10 @@ inline void SceneGraphWindow(const Scene& scene) {
     ImGui::Separator();
 
     for (const auto& object : scene.objects) {
-        std::string objName = "Object " + std::to_string(object.ID);
+        std::string objName = object.name.empty() ? "GameObject " + std::to_string(object.ID) : object.name;
         if (const bool isSelected = (scene.editor->selectedObjectIndex == object.ID); ImGui::Selectable(objName.c_str(), isSelected)) {
            scene.editor->SetSelectedObjectIndex(object.ID);
+
         }
     }
     ImGui::End();

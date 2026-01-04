@@ -141,7 +141,7 @@ std::vector<GameObject> FontSystem::GenerateWordMesh(const std::shared_ptr<Font>
 
         Glyph characterGlyph(contours);
         const glm::vec3 position(xOffset * characterSpacing, 0.0f, 0.0f);
-        Transform characterTransform(position);
+        Transform characterTransform(position, glm::vec3(0.0f), glm::vec3(1.0f));
         const uint32_t id = GenerateGameObjectID();
         GameObject characterObject{characterTransform, std::make_shared<Glyph>(characterGlyph)};
         objects.push_back(characterObject);

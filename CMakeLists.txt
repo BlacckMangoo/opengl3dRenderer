@@ -93,8 +93,7 @@ target_link_libraries(imgui PUBLIC glfw)
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
 
 add_library(glad_c STATIC Deps/glad/src/glad.c
-        include/glmDebugger.h
-        include/FastNoise.h)
+)
 target_include_directories(glad_c PUBLIC Deps/glad/include)
 
 
@@ -110,6 +109,7 @@ add_executable(WaterAdventure ${SRC_FILES}
         include/Renderer/Renderer.h
         include/Core/Scene.h
         include/Core/UiManager.h
+
 )
 
 set_target_properties(WaterAdventure PROPERTIES

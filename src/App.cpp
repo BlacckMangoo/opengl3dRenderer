@@ -30,6 +30,7 @@ void Application::Run() {
         if (const ImGuiIO& io = ImGui::GetIO(); !io.WantCaptureMouse) {
             currentScene->camera->ProcessInput(window->get_GLFW_Window(), deltaTime);
         }
+
         Render();
 
         // UI FRAME START
@@ -75,6 +76,7 @@ void Application::Render() const {
 }
 
 Application::~Application() {
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
