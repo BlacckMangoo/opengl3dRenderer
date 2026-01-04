@@ -12,12 +12,10 @@ void LoadAssets() {
     ResourceManager::LoadShader("../Assets/text.vert", "../Assets/text.frag", "text");
     ResourceManager::LoadShader("../Assets/quad.vert", "../Assets/quad.frag", "screen");
 }
-
-
-
 void Application::Init() const {
     LoadAssets();
     ImguiInit(window->get_GLFW_Window());
+
 }
 
 void Application::Run() {
@@ -31,32 +29,12 @@ void Application::Run() {
             currentScene->camera->ProcessInput(window->get_GLFW_Window(), deltaTime);
         }
         Render();
-
-        // UI FRAME START
-        {
-
         glfwPollEvents();
         ImGuiBeginFrame();
-
-        // stuff here is updated every frame
         CameraPropertiesWindow(*currentScene->camera);
         SceneGraphWindow(*currentScene);
-
-        //inspector ui
-            ImGui::Begin("Inspector");
-        if (currentScene->editor->selectedObjectIndex < currentScene->objects.size()) {
-            TransformWindow(currentScene->objects[currentScene->editor->selectedObjectIndex].transform);
-            // material window if renderable is a mesh
-            if (auto& selectedObject = currentScene->objects[currentScene->editor->selectedObjectIndex]; selectedObject.renderable) {
-                if (const auto meshPtr = std::dynamic_pointer_cast<Mesh>(selectedObject.renderable)) {
-                    MaterialPropsWindow(meshPtr->mesh[0].material);
-                }
-            }
-            ImGui::End();
-
         ImGuiEndFrame();
-    };
-        }
+
         glfwSwapBuffers((window->get_GLFW_Window()));
     }
 

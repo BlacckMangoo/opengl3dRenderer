@@ -31,34 +31,42 @@ Mesh ModelLoader::LoadGLTF( const std::filesystem::path &path) {
             std::cerr << "Failed to load glTF: " << fastgltf::getErrorMessage(asset.error()) << '\n';
         }
 
-        // process Nodes
-        for ( auto& node : asset->nodes)
-        ProcessNode( node , asset.get() ,model) ;
+        auto&[nodeIndices, name] = asset->scenes[asset->defaultScene.value()];
+        for (const auto nodeIndex : nodeIndices) {
+            ProcessNode(asset->nodes[nodeIndex], asset.get(), model);
+        }
         return model;
+
 
     }
 }
 
-    void ModelLoader::ProcessNode( fastgltf::Node &node, fastgltf::Asset &asset , Mesh& model )  {
-      // process current node
+void ModelLoader::ProcessNode(fastgltf::Node& node,
+                           fastgltf::Asset& asset,
+                           Mesh& model)
+{
+    if (node.meshIndex.has_value()) {
+        auto& mesh = asset.meshes[*node.meshIndex];
+        for (auto& prim : mesh.primitives) {
+            Primitive out = ProcessPrimtives(prim,asset) ;
+            out.name = mesh.name ;
+            model.mesh.push_back(out);
+        }
+    }
 
-    if (!node.meshIndex .has_value())        return ;
-    model.mesh.push_back(ProcessPrimtives( asset.meshes[*node.meshIndex], asset ));
-     // recursively process children
-      for (const auto& childIndex : node.children) {
-          auto& childNode = asset.nodes[childIndex];
-          ProcessNode(childNode, asset, model);
-      }
-    };
+    // ALWAYS traverse children
+    for (auto childIndex : node.children) {
+        ProcessNode(asset.nodes[childIndex], asset, model);
+    }
+}
 
 
-    Primitive ModelLoader::ProcessPrimtives(fastgltf::Mesh &mesh , const fastgltf::Asset &asset  ) {
+    Primitive ModelLoader::ProcessPrimtives(fastgltf::Primitive& prim   , const fastgltf::Asset &asset  ) {
         std::vector<Vertex> vertices ;
         std::vector<unsigned int> indices ;
 
-        fastgltf::Primitive& primitive = mesh.primitives[0];
-        if (primitive.indicesAccessor.has_value()) {
-            auto& accessor = asset.accessors[primitive.indicesAccessor.value()];
+        if (prim.indicesAccessor.has_value()) {
+            auto& accessor = asset.accessors[prim.indicesAccessor.value()];
             indices.resize(accessor.count);
 
             std::size_t idx = 0;
@@ -66,10 +74,12 @@ Mesh ModelLoader::LoadGLTF( const std::filesystem::path &path) {
                 indices[idx++] = index;
             });
 
+
+
         }
 
         // process vertices
-        const auto* positionIt = primitive.findAttribute("POSITION");
+        const auto* positionIt = prim.findAttribute("POSITION");
 
         auto& posAccessor = asset.accessors[positionIt->accessorIndex];
         vertices.resize(posAccessor.count);
@@ -82,7 +92,7 @@ Mesh ModelLoader::LoadGLTF( const std::filesystem::path &path) {
         );
 
         // normals
-        const auto* normalIt = primitive.findAttribute("NORMAL");
+        const auto* normalIt = prim.findAttribute("NORMAL");
         bool hasNormals = normalIt && normalIt->accessorIndex < asset.accessors.size();
         if (hasNormals) {
             auto& normalAccessor = asset.accessors[normalIt->accessorIndex];
@@ -92,39 +102,12 @@ Mesh ModelLoader::LoadGLTF( const std::filesystem::path &path) {
                         vertices[i].normal = glm::vec3(n.x(), n.y(), n.z());
                     }
                 );
-            } else {
-                hasNormals = false; // Fallback to generating normals
             }
-        }
-        if (!hasNormals) {
-            // Generate normals from positions and indices
-            // Initialize normals to zero
-            for (auto& vertex : vertices) {
-                vertex.normal = glm::vec3(0.0f);
-            }
-            // For each triangle, compute face normal and accumulate
-            for (size_t i = 0; i + 2 < indices.size(); i += 3) {
-                unsigned int ia = indices[i];
-                unsigned int ib = indices[i + 1];
-                unsigned int ic = indices[i + 2];
-                if (ia >= vertices.size() || ib >= vertices.size() || ic >= vertices.size()) continue;
-                glm::vec3& a = vertices[ia].position;
-                glm::vec3& b = vertices[ib].position;
-                glm::vec3& c = vertices[ic].position;
-                const glm::vec3 normal = glm::normalize(glm::cross(b - a, c - a));
-                vertices[ia].normal += normal;
-                vertices[ib].normal += normal;
-                vertices[ic].normal += normal;
-            }
-            // Normalize all normals
-            for (auto& vertex : vertices) {
-                vertex.normal = glm::normalize(vertex.normal);
-            }
-            std::cout << "Generated normals for mesh: " << mesh.name << std::endl;
         }
 
+
         // tangents
-        if (const auto* uvIt = primitive.findAttribute("TEXCOORD_0"); uvIt && uvIt->accessorIndex < asset.accessors.size()) {
+        if (const auto* uvIt = prim.findAttribute("TEXCOORD_0"); uvIt && uvIt->accessorIndex < asset.accessors.size()) {
             auto& uvAccessor = asset.accessors[uvIt->accessorIndex];
             if ( bool validUV = uvAccessor.type == fastgltf::AccessorType::Vec2 ) {
                 fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(asset, uvAccessor,
@@ -144,7 +127,7 @@ Mesh ModelLoader::LoadGLTF( const std::filesystem::path &path) {
             }
         }
 
-        const auto* tangentIt = primitive.findAttribute("TANGENT");
+        const auto* tangentIt = prim.findAttribute("TANGENT");
         if (tangentIt && tangentIt->accessorIndex < asset.accessors.size()) {
             auto& tangentAccessor = asset.accessors[tangentIt->accessorIndex];
             if ( bool validTangent = tangentAccessor.type == fastgltf::AccessorType::Vec4  ) {

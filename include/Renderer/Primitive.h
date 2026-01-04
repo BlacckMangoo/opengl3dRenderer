@@ -42,15 +42,18 @@ struct Material {
 
 
 class Primitive {
-
 public:
     unsigned int VAO{} , VBO{} , EBO{} ;
     int indexCount{} ;
+
+    std::string name ;
 
     std::vector<Vertex> vertices ;
     std::vector<unsigned int> indices ;
     std::vector<Texture> textures ;
     Material material  ;
+
+    Primitive() = default ;
 
     Primitive(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures ,const Material &material = {}) {
         this->vertices = vertices;

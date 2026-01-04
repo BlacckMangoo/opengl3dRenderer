@@ -18,55 +18,8 @@ void Renderer::SetupModelMatrix(Shader& shader, const Transform& transform) {
     shader.SetMat4("model", modelMatrix);
 }
 
-void Renderer::RenderGameObject(const GameObject& gameObject) {
-    if (gameObject.renderable) {
-        gameObject.renderable->Render(*this, gameObject.transform);
-    }
-}
-
-void Renderer::DrawPrimitive(const Primitive& prim, Shader& shader, const RenderCommand& command) {
-    shader.Use();
-    // Set material uniforms constants
-
-    shader.SetFloat("u_AoFactor" , prim.material.aoFactor);
-    shader.SetFloat("u_MetallicFactor" , prim.material.metallicFactor);
-    shader.SetFloat("u_RoughnessFactor" , prim.material.roughnessFactor);
-    shader.SetVector4f("u_BaseColorFactor" , prim.material.baseColorFactor);
-    shader.SetVec3("u_EmissiveFactor" , prim.material.emissiveFactor);
-
-    glPolygonMode(GL_FRONT_AND_BACK, command.GetGLPolygonMode());
-    glBindVertexArray(prim.VAO);
-    glDrawElements(command.GetGLPrimitiveType(), prim.indexCount, GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
-void Renderer::DrawCurve(const Curve& curve) {
-    glBindVertexArray(curve.VAO);
-    glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(curve.points.size()));
-    glBindVertexArray(0);
-}
-
-// ============ IRenderable Implementations ============
 
 
-void Mesh::Render(Renderer &renderer, const Transform &transform) {
-    Shader& shader = ResourceManager::GetShader("lit");
-    renderer.SetupCameraUniforms(shader);
-    Renderer::SetupModelMatrix(shader, transform);
-
-    // material uniforms
-
-    const glm::mat4 modelMatrix = transform.GetTransformMatrix();
-    const glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelMatrix)));
-    shader.SetMat3("normalMatrix", normalMatrix);
-    shader.SetVec3("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
-    shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-
-    for (const auto& prim : mesh) {
-        Renderer::DrawPrimitive(prim, shader, RenderCommand::Default());
-    }
-}
 
 
 void Renderer::InitScreenQuad()
@@ -90,43 +43,17 @@ void Renderer::InitScreenQuad()
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), static_cast<void *>(0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), static_cast<void *>(0)); // 4 floats per vertex, position starts at offset 0
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void *>(2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void *>(2 * sizeof(float))); // uv starts at offset 2
 
     glBindVertexArray(0);
 }
-
-void Renderer::BeginScenePass() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glEnable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-
-void Renderer::EndScenePass() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glDisable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    screenShader.Use();
-    screenShader.SetInt("screenTexture", 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, colorTexture);
-
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
-}
-
-
 void Renderer::InitFramebuffer(const int width, const int height)
 {
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     // Framebuffer
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -168,3 +95,80 @@ void Renderer::InitFramebuffer(const int width, const int height)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Renderer::BeginScenePass() const {
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+
+void Renderer::RenderGameObject(const GameObject& gameObject) {
+    if (gameObject.renderable) {
+        gameObject.renderable->Render(*this, gameObject.transform);
+    }
+}
+
+void Renderer::DrawPrimitive(const Primitive& prim, Shader& shader, const RenderCommand& command) {
+    shader.Use();
+    // Set material uniforms constants
+
+    shader.SetFloat("u_AoFactor" , prim.material.aoFactor);
+    shader.SetFloat("u_MetallicFactor" , prim.material.metallicFactor);
+    shader.SetFloat("u_RoughnessFactor" , prim.material.roughnessFactor);
+    shader.SetVector4f("u_BaseColorFactor" , prim.material.baseColorFactor);
+    shader.SetVec3("u_EmissiveFactor" , prim.material.emissiveFactor);
+
+    glPolygonMode(GL_FRONT_AND_BACK, command.GetGLPolygonMode());
+    glBindVertexArray(prim.VAO);
+    glDrawElements(command.GetGLPrimitiveType(), prim.indexCount, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+
+}
+
+void Renderer::DrawCurve(const Curve& curve) {
+    glBindVertexArray(curve.VAO);
+    glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(curve.points.size()));
+    glBindVertexArray(0);
+}
+
+void Mesh::Render(Renderer &renderer, const Transform &transform) {
+    Shader& shader = ResourceManager::GetShader("lit");
+    renderer.SetupCameraUniforms(shader);
+    Renderer::SetupModelMatrix(shader, transform);
+
+    // material uniforms
+
+    const glm::mat4 modelMatrix = transform.GetTransformMatrix();
+    const glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelMatrix)));
+    shader.SetMat3("normalMatrix", normalMatrix);
+    shader.SetVec3("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
+    shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    for (const auto& prim : mesh) {
+        Renderer::DrawPrimitive(prim, shader, RenderCommand::Default());
+    }
+}
+
+
+
+void Renderer::EndScenePass() const  {
+
+    // binds back to default framebuffer and draws the quad with scene's texture
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    screenShader.Use();
+    screenShader.SetInt("screenTexture", 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, colorTexture);
+
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}

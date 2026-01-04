@@ -24,6 +24,6 @@ class ModelLoader {
     }
     static Mesh LoadGLTF(  const std::filesystem::path &path ) ;
     static void ProcessNode(fastgltf::Node &node, fastgltf::Asset &asset, Mesh &model) ;
-    static  Primitive ProcessPrimtives(fastgltf::Mesh &mesh, const fastgltf::Asset &asset) ;
+    static  Primitive ProcessPrimtives(fastgltf::Primitive &prim, const fastgltf::Asset &asset) ;
 
 };
