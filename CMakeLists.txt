@@ -103,12 +103,12 @@ file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 add_executable(WaterAdventure ${SRC_FILES}
         Deps/stb/src/stb_image_impl.cpp
         include/Renderer/Window.h
-        include/Core/Camera.h
-        include/App.h
+        include/App/Camera.h
+        include/App/App.h
         include/GameObject.h
         include/Renderer/Renderer.h
-        include/Core/Scene.h
-        include/Core/UiManager.h
+        include/App/Scene.h
+        include/App/Editor/UiManager.h
 
 )
 

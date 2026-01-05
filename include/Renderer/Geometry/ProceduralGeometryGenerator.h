@@ -1,6 +1,5 @@
 #pragma once
-#include <Renderer/Primitive.h>
-#include <Renderer/Curve.h>
+#include "Renderer/Geometry/Primitive.h"
 
 
 
@@ -20,7 +19,7 @@ inline Primitive GenerateQuadData() {
         2, 3, 0
     };
 
-    Primitive quadMesh{vertices,indices,{},{}};
+    Primitive quadMesh{vertices,indices,{}};
 
  return quadMesh;
 }
@@ -75,16 +74,8 @@ inline Primitive GenerateCubeData() {
    };
 
 
-    Primitive cubeMesh{vertices,indices,{},{}};
+    Primitive cubeMesh{vertices,indices,{}};
 
  return cubeMesh;
 }
-
-
-inline Curve GenerateCurveFromPoints(const std::vector<Point>& points ) {
-    return Curve{points};
-
-}
-
-
 

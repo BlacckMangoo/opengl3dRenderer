@@ -1,5 +1,5 @@
 
-#include "Renderer//Texture.h"
+#include "../../include/Renderer/Resources/Texture.h"
 #include <glad/glad.h>
 
 

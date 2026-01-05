@@ -1,6 +1,6 @@
 
 #include <glad/glad.h>
-#include "Renderer/ResourceManager.h"
+#include "../../include/Renderer/Resources/ResourceManager.h"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -12,7 +12,7 @@ std::map<std::string, Texture2D>    ResourceManager::Textures;
 std::map<std::string, Shader>       ResourceManager::Shaders;
 
 
-Shader ResourceManager::LoadShader(const std::filesystem::path &vShaderFile, const std::filesystem::path fShaderFile, const std::string &name)
+Shader ResourceManager::LoadShader(const std::filesystem::path &vShaderFile, const std::filesystem::path& fShaderFile, const std::string &name)
 {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile);
     return Shaders[name];
@@ -93,12 +93,9 @@ Shader ResourceManager::loadShaderFromFile(const std::filesystem::path &vShaderF
     }
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
-    const char* gShaderCode = geometryCode.c_str();
-    // 2. now create shader object from source code
     Shader shader;
     shader.Compile(vShaderCode, fShaderCode);
 
-    // Basic sanity: if compilation didn't set ID, warn
     if (shader.ID == 0) {
         std::cerr << "ResourceManager::loadShaderFromFile - compiled shader has ID 0 (compile/link likely failed): "
                   << vShaderFile << ", " << fShaderFile << std::endl;
@@ -119,25 +116,13 @@ Texture2D ResourceManager::loadTextureFromFile(const std::filesystem::path &file
     // load image
     int width, height, nrChannels;
     unsigned char* data = stbi_load(fileCStr, &width, &height, &nrChannels, 0);
-    // now generate texture
     texture.Generate(width, height, data);
-    // and finally free image data
     stbi_image_free(data);
     return texture;
 }
 
 
-Texture2D ResourceManager::GenerateSolidColorTexture(unsigned char r, unsigned char g, unsigned char b, unsigned char a, const std::string &name)
-{
-    Texture2D texture;
-    texture.Internal_Format = GL_RGBA;
-    texture.Image_Format = GL_RGBA;
 
-    unsigned char colorData[4] = { r, g, b, a };
-    texture.Generate(1, 1, colorData);
-    Textures[name] = texture;
-    return texture;
-}
 
 Shader ResourceManager::LoadComputeShader(const std::filesystem::path &cShaderFile, const std::string &name)
 {
@@ -156,7 +141,7 @@ Shader ResourceManager::loadComputeShaderFromFile(const std::filesystem::path &c
         computeShaderFile.close();
         computeCode = cShaderStream.str();
     }
-    catch (std::exception &e)
+    catch ( std::exception& e)
     {
         std::cout << "ERROR::SHADER: Failed to read compute shader file: " << cShaderFile << std::endl;
     }

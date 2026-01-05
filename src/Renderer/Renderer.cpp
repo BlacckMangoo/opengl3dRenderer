@@ -1,10 +1,10 @@
 #include <Renderer/Renderer.h>
 #include "GameObject.h"
-#include "Renderer/Curve.h"
-#include "Renderer/ModelLoader.h"
-#include "Core/Camera.h"
+#include "../../include/App/Camera.h"
 #include "glm/gtx/string_cast.hpp"
 #include <iostream>
+
+
 void Renderer::SetupCameraUniforms(Shader& shader) const {
     shader.Use();
     const float aspectRatio = window.getAspectRatio();
@@ -41,32 +41,29 @@ void Renderer::DrawPrimitive(const Primitive& prim, Shader& shader, const Render
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Renderer::DrawCurve(const Curve& curve) {
-    glBindVertexArray(curve.VAO);
-    glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(curve.points.size()));
-    glBindVertexArray(0);
-}
 
-// ============ IRenderable Implementations ============
+
 
 
 void Mesh::Render(Renderer &renderer, const Transform &transform) {
-    Shader& shader = ResourceManager::GetShader("lit");
-    renderer.SetupCameraUniforms(shader);
-    Renderer::SetupModelMatrix(shader, transform);
 
-    // material uniforms
-
+    Shader& litShader = ResourceManager::GetShader("lit");
+    renderer.SetupCameraUniforms(litShader);
+    Renderer::SetupModelMatrix(litShader, transform);
     const glm::mat4 modelMatrix = transform.GetTransformMatrix();
     const glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelMatrix)));
-    shader.SetMat3("normalMatrix", normalMatrix);
-    shader.SetVec3("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
-    shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    litShader.SetMat3("normalMatrix", normalMatrix);
+    litShader.SetVec3("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
+    litShader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
     for (const auto& prim : mesh) {
-        Renderer::DrawPrimitive(prim, shader, RenderCommand::Default());
+        Renderer::DrawPrimitive(prim, litShader, RenderCommand::Default());
     }
 }
+
+// Render PASSES
+// 1. Scene Pass - render scene to framebuffer
+// 2. Screen Pass - render framebuffer texture to screen quad
 
 
 void Renderer::InitScreenQuad()
@@ -90,7 +87,7 @@ void Renderer::InitScreenQuad()
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), static_cast<void *>(0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), static_cast<void *>(nullptr));
 
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void *>(2 * sizeof(float)));
@@ -106,6 +103,7 @@ void Renderer::BeginScenePass() const {
 
 
 void Renderer::EndScenePass() const {
+    Shader& screenShader = ResourceManager::GetShader("screen"); // look up O(1) time
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glDisable(GL_DEPTH_TEST);
@@ -123,8 +121,7 @@ void Renderer::EndScenePass() const {
 }
 
 
-void Renderer::InitFramebuffer(const int width, const int height)
-{
+void Renderer::InitFramebuffer(const int width, const int height)  {
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     // Framebuffer

@@ -3,7 +3,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
-#include <Core/Camera.h>
+
 
 
 inline void ImguiInit(GLFWwindow* window) {

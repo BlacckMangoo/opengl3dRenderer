@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
-#include "IRenderable.h"
+#include "../IRenderable.h"
 #include "Primitive.h"
 
-struct Mesh final : public IRenderable {
+class Mesh final : public IRenderable {
+public:
     Mesh() = default ;
     explicit Mesh( const std::vector<Primitive> &prims ) : mesh(prims) {};
     explicit Mesh (const Primitive& prim ) {

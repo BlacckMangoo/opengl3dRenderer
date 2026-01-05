@@ -1,10 +1,9 @@
 #pragma  once
-#include "Core/Camera.h"
+#include "Camera.h"
 #include "Renderer/ModelLoader.h"
 #include "GameObject.h"
-#include "Editor.h"
-#include "FontSystem.h"
-#include "ProceduralGeometryGenerator.h"
+#include "Editor/Editor.h"
+#include "../Renderer/Geometry/ProceduralGeometryGenerator.h"
 #include "Renderer/Text.h"
 #include "Transform.h"
 

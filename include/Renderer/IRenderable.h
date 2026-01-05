@@ -2,8 +2,6 @@
 
 // Forward declarations
 class Renderer;
-class Shader;
-class Scene;
 struct Transform;
 
 // Interface for all renderable types

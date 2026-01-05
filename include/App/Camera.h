@@ -19,27 +19,25 @@ public:
     // Get matrices
     [[nodiscard]] glm::mat4 GetProjectionMatrix(float aspectRatio) const;
     [[nodiscard]] glm::mat4 GetViewMatrix() const;
-
-    // Getters
      [[nodiscard]] glm::vec3 GetPosition() const { return position; }
      [[nodiscard]] glm::vec3 GetFront() const { return front; }
      [[nodiscard]] glm::vec3 GetUp() const { return up; }
 
-    glm::vec3 position;
-    glm::vec3 front;
-    glm::vec3 up;
-    glm::vec3 right{};
-    glm::vec3 worldUp;
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     // Camera settings
-    float fov;
-    float nearPlane;
-    float farPlane;
-    float movementSpeed;
-    float rotationSpeed;
-    float mouseSensitivity;
-    float panSensitivity;
-    float scrollSensitivity;
+    float fov = 45.0f;
+    float nearPlane = 0.1f;
+    float farPlane = 100.0f;
+    float movementSpeed  = 5.0f;
+    float rotationSpeed = 0.1f;
+    float mouseSensitivity = 0.1f;
+    float panSensitivity = 0.1f;
+    float scrollSensitivity = 1.0f;
 
 
 private:
@@ -51,9 +49,9 @@ private:
 
 
     // Euler angles
-    float yaw;
-    float pitch;
-    float roll;
+    float yaw = -90.0f;
+    float pitch = 0.0f;
+    float roll = 0.0f;
 
 
 

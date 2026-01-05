@@ -1,7 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include "ResourceManager.h"
+#include "Resources/ResourceManager.h"
 #include "Window.h"
 #include "Transform.h"
 
@@ -61,27 +59,25 @@ public:
     }
     void RenderGameObject(const GameObject &gameObject);
     void SetupCameraUniforms(Shader& shader) const;
-
     static void SetupModelMatrix(Shader& shader, const Transform& transform);
     static void DrawPrimitive(const Primitive& prim, Shader& shader, const RenderCommand& command);
 
-    static void DrawCurve(const Curve& curve);
+    void InitScreenQuad() ;
+    void InitFramebuffer(int width, int height) ;
 
-    void InitScreenQuad();
     void BeginScenePass() const;
     void EndScenePass() const;
-    void InitFramebuffer(int width, int height);
+
     [[nodiscard]] Camera& GetCamera() const { return camera; }
     [[nodiscard]] Window& GetWindow() const { return window; }
 
-    Shader& screenShader = ResourceManager::GetShader("screen");
 
-    unsigned int quadVAO = 0;
-    unsigned int quadVBO = 0;
-    unsigned int fbo = 0; // Default Framebuffer Object
-    unsigned int colorTexture = 0;
-    unsigned int depthTexture = 0;
-    unsigned int rbo = 0;
+    GLuint quadVAO = 0;
+    GLuint quadVBO = 0;
+    GLuint fbo = 0; // Default Framebuffer Object
+    GLuint colorTexture = 0;
+    GLuint depthTexture = 0;
+    GLuint rbo = 0;
 
 
 private:

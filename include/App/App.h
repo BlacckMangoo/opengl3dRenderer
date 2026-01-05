@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include "Renderer/Renderer.h"
-#include "Core/Scene.h"
+#include "../Renderer/Renderer.h"
+#include "Scene.h"
 class Application {
 
 public :

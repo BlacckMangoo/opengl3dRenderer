@@ -1,10 +1,9 @@
-#include "App.h"
+#include "../../include/App/App.h"
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include "Core/UiManager.h"
-#include "Core/ProceduralGeometryGenerator.h"
-#include "glmDebugger.h"
+#include "../../include/App/Editor/UiManager.h"
+#include "../../include/Core/glmDebugger.h"
 
 void LoadAssets() {
     ResourceManager::LoadShader("../Assets/lit.vert", "../Assets/lit.frag", "lit");

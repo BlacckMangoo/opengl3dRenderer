@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "../../include/Renderer/Resources/Shader.h"
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include <iostream>

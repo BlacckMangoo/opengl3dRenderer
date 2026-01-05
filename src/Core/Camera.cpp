@@ -1,28 +1,11 @@
-#include "Core/Camera.h"
+#include "../../include/App/Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera()
-    : position(0.0f, 2.0f, 10.0f)
-    , front(0.0f, 0.0f, -1.0f)
-    , up(0.0f, 1.0f, 0.0f)
-    , worldUp(0.0f, 1.0f, 0.0f)
-    , fov(45.0f)
-    , nearPlane(0.1f)
-    , farPlane(1000.0f)
-    , movementSpeed(2.5f)
-    , rotationSpeed(45.0f)
-    , mouseSensitivity(0.1f)
-    , panSensitivity(0.003f)
-    , scrollSensitivity(2.0f)
-    , yaw(-90.0f)
-    , pitch(0.0f)
-    , roll(0.0f)
 {
     UpdateCameraVectors();
-    lastX = 1920.0f / 2.0f;
-    lastY = 1080.0f / 2.0f;
-    firstMouse = true;
-} // intitialise fields in the constructor
+}
+
 
 
 void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
@@ -54,21 +37,21 @@ void Camera::SetupMouseCallbacks(GLFWwindow* window, Camera* camera) {
             cam->firstMouse = false;
         }
 
-        const float xoffset = static_cast<float>(xpos) - cam->lastX;
-        const float yoffset = cam->lastY - static_cast<float>(ypos); // reversed since y-coordinates go from bottom to top
+        const float x_offset = static_cast<float>(xpos) - cam->lastX;
+        const float y_offset = cam->lastY - static_cast<float>(ypos); // reversed since y-coordinates go from bottom to top
 
         cam->lastX = static_cast<float>(xpos);
         cam->lastY = static_cast<float>(ypos);
 
         if (cam->isRotating) {
-            cam->ProcessMouseMovement(xoffset, yoffset);
+            cam->ProcessMouseMovement(x_offset, y_offset);
         } else if (cam->isPanning) {
-            cam->ProcessMousePan(xoffset, yoffset);
+            cam->ProcessMousePan(x_offset, y_offset);
         }
     });
 
-    glfwSetScrollCallback(window, [](GLFWwindow* window, double xOffset, double yOffset) {
-        auto* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+    glfwSetScrollCallback(window, [](GLFWwindow* wind, double xOffset, const double yOffset) {
+        auto* cam = static_cast<Camera*>(glfwGetWindowUserPointer(wind));
         cam->ProcessMouseScroll(static_cast<float>(yOffset));
     });
 
